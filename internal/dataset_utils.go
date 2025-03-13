@@ -1,8 +1,9 @@
 package internal
 
-import "fmt"
-
-const TypeCategorical ColumnType = iota // 0
+import (
+	"fmt"
+	"strconv"
+)
 
 // GetColIndx returns the index of a column with the given name
 func (d *Dataset) GetColIndex(name string) (int, error) {
@@ -29,7 +30,7 @@ func (d *Dataset) GetUniqueValues(columnName string) ([]string, error) {
 		return nil, err
 	}
 
-	if d.Columns[idx].Type != TypeCategorical {
+	if d.Columns[idx].Type != CategoricalType {
 		return nil, fmt.Errorf("column '%s' is not categorical", columnName)
 	}
 
@@ -46,4 +47,45 @@ func (d *Dataset) GetUniqueValues(columnName string) ([]string, error) {
 	}
 
 	return uniqueValues, nil
+}
+
+// GetNumericValue converts a string value to a float64
+func GetNumericValue(value string) (float64, error) {
+	if value == "" {
+		return 0, fmt.Errorf("missing value")
+	}
+	return strconv.ParseFloat(value, 64)
+}
+
+// GetNumericValues returns all numeric values in a column
+func (d *Dataset) GetNumericValues(columnName string) ([]float64, []bool, error) {
+	idx, err := d.GetColIndex(columnName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if d.Columns[idx].Type != NumericType {
+		return nil, nil, fmt.Errorf("column '%s' is not numeric", columnName)
+	}
+
+	values := make([]float64, len(d.Columns[idx].Values))
+	validValues := make([]bool, len(d.Columns[idx].Values))
+
+	for i, val := range d.Columns[idx].Values {
+		if d.Columns[idx].Missing[i] {
+			validValues[i] = false
+			continue
+		}
+
+		numVal, err := GetNumericValue(val)
+		if err != nil {
+			validValues[i] = false
+			continue
+		}
+
+		values[i] = numVal
+		validValues[i] = true
+	}
+
+	return values, validValues, nil
 }
