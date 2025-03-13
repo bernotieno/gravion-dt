@@ -29,7 +29,7 @@ type Dataset struct {
 // NewDataset creates a new empty dataset with initialized maps
 func NewDataset() *Dataset {
 	return &Dataset{
-		Columns:     []Column{},
+		Columns:     make([]Column, 0),
 		ColumnMap:   make(map[string]int),
 		NumRows:     0,
 		ColumnTypes: make(map[string]ColumnType),
