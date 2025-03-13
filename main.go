@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gravion-dt/internal"
 	"log"
 	"os"
 	"path/filepath"
@@ -58,6 +59,9 @@ dt -c predict -i <path to prediction_data_file.csv> -m <model_file.dt> -o <predi
 		if *targetColumn == "" {
 			log.Fatalln("Error: Target column is required for training. Use -t <target_column_name>")
 		}
+		filePath := "./datasets/dataset.csv"
+		out, _ := internal.ReadCSV(filePath)
+		fmt.Println(out)
 		// // Call the train function here
 		// err := Train(*inputFile, *targetColumn, *outputFile)
 		// if err != nil {
