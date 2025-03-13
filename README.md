@@ -6,7 +6,7 @@ This project implements a high-performance and scalable Decision Tree (C4.5) cla
 ## Features
 - Implements the **C4.5 Decision Tree** algorithm.
 - Supports categorical and numerical data.
-- Handles missing values and noisy data.
+- Handles missing values.
 - Outputs trained models in JSON format.
 - CLI-based execution for training and prediction.
 - Optimized for speed and scalability.
@@ -16,8 +16,8 @@ To build and use the decision tree tool, follow these steps:
 
 ```sh
 # Clone the repository
-git clone <repo-url>
-cd <repo-folder>
+git clone https://github.com/bernotieno/gravion-dt.git
+
 
 # Build the project
 go build -o dt .
@@ -58,18 +58,16 @@ dt -c predict -i datasets/test.csv -m model.dt -o predictions.csv
 ```
 
 ## Error Handling
-| Error | Cause | Suggested Fix |
-|--------|--------|---------------|
-| Missing input file | Incorrect or missing CSV path | Verify the file exists and path is correct |
-| Target column not found | Target column missing in dataset | Check column name in CSV |
-| Model file not found | Model file path incorrect | Train a model first or verify the path |
-| Output path not specified | Missing `-o` argument | Specify output file path |
+
+
 
 ## Licensing
 This project is licensed under the [MIT license](LICENSE)
-## References
-- [Implementing Decision Trees (C4.5)](https://www.elementsofcomputerscience.com/posts/implementing-decision-trees-c45-algorithm-01/)
-- [Decision Tree Classification Explained](https://www.youtube.com/watch?v=ZVR2Way4nwQ)
-- [Decision Tree Classification in Python (from scratch!)](https://www.youtube.com/watch?v=sgQAhG5Q7iY)
 
----
+## Authors
+[Bernard Okumu](https://github.com/bernotieno)  
+[Cynthia Oketch](https://github.com/CynthiaOketch)  
+[Denil Anyonyi](https://github.com/denilany)  
+[Joab Owala](https://github.com/joabowala)  
+[Hilary Okello](https://github.com/hilaryokello)
+
