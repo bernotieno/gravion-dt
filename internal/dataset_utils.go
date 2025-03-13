@@ -89,3 +89,19 @@ func (d *Dataset) GetNumericValues(columnName string) ([]float64, []bool, error)
 
 	return values, validValues, nil
 }
+
+// GetRow returns all values in a row
+func (d *Dataset) GetRow(rowIndex int) (map[string]string, error) {
+	if rowIndex < 0 || rowIndex >= d.NumRows {
+		return nil, fmt.Errorf("row index %d out of bounds (0-%d)", rowIndex, d.NumRows-1)
+	}
+
+	row := make(map[string]string)
+	for _, col := range d.Columns {
+		if !col.Missing[rowIndex] {
+			row[col.Name] = col.Values[rowIndex]
+		}
+	}
+
+	return row, nil
+}
