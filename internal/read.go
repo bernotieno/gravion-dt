@@ -153,3 +153,18 @@ func ReadCSV(filepath string) (*Dataset, error) {
 
 	return dataset, nil
 }
+
+// SplitIntoTrainTest splits the dataset into training and testing sets (80% train, 20% test)
+func (d *Dataset) SplitIntoTrainTest(trainRatio float64) (*Dataset, *Dataset) {
+	if trainRatio <= 0 || trainRatio >= 1 {
+		trainRatio = 0.8 // Default to 80-20 split if the ratio is invalid
+	}
+
+	trainSize := int(float64(d.NumRows) * trainRatio)
+	indices := rand.Perm(d.NumRows) // Randomize row indices
+
+	trainIndices := indices[:trainSize]
+	testIndices := indices[trainSize:]
+
+	return createSubset(d, trainIndices), createSubset(d, testIndices)
+}
