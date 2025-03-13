@@ -10,3 +10,12 @@ func (d *Dataset) GetColIndex(name string) (int, error) {
 	}
 	return index, nil
 }
+
+// GetColValues returns all values in a column
+func (d *Dataset) GetColValues(name string) ([]string, []bool, error) {
+	index, err := d.GetColIndex(name)
+	if err != nil {
+		return nil, nil, err
+	}
+	return d.Columns[index].Values, d.Columns[idx].Missing, nil
+}
