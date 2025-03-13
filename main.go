@@ -19,6 +19,13 @@ func main() {
 	// Parse command line arguments
 	flag.Parse()
 
+	if flag.NFlag() != 4 {
+		fmt.Println(`Usage:
+dt -c train -i <path to training_data_file.csv> -t <target_column_name> -o <model_file.dt>
+dt -c predict -i <path to prediction_data_file.csv> -m <model_file.dt> -o <predictions.csv>`)
+		os.Exit(1)
+	}
+
 	// Validate command line arguments
 	if *command == "" {
 		log.Fatalln("Error: Command is required. Use -c train or -c predict")
