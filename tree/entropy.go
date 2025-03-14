@@ -14,7 +14,7 @@ import (
 // Returns:
 //   float64: The calculated entropy value.
 //   error: An error if there is an issue calculating the class counts or if the dataset is empty.
-func (b *Builder) calculateEntropy(data *internal.Dataset) (float64, error) {
+func (b *Builder) CalculateEntropy(data *internal.Dataset) (float64, error) {
 	// Get class counts
 	classCounts, err := b.getClassCounts(data)
 	if err != nil {

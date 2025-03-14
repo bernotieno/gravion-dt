@@ -8,7 +8,7 @@ import (
 // findBestSplit finds the attribute with the highest gain ratio
 func (b *Builder) findBestSplit(data *internal.Dataset, usedAttributes []string) (string, interface{}, float64, error) {
 	// Calculate information content of the current data
-	classEntropy, err := b.calculateEntropy(data)
+	classEntropy, err := b.CalculateEntropy(data)
 	if err != nil {
 		return "", nil, 0, err
 	}
