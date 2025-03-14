@@ -14,6 +14,20 @@ func (d *Dataset) GetColIndex(name string) (int, error) {
 	return index, nil
 }
 
+// HasColumn checks if the dataset has a column with the given name
+func (d *Dataset) HasColumn(name string) bool {
+	_, exists := d.ColumnMap[name]
+	return exists
+}
+
+// GetColType returns the type of a column
+func (d *Dataset) GetColType(name string) (ColumnType, error) {
+	if !d.HasColumn(name) {
+		return 0, fmt.Errorf("column '%s' not found", name)
+	}
+	return d.ColumnTypes[name], nil
+}
+
 // GetColValues returns all values in a column
 func (d *Dataset) GetColValues(name string) ([]string, []bool, error) {
 	index, err := d.GetColIndex(name)
@@ -104,4 +118,68 @@ func (d *Dataset) GetRow(rowIndex int) (map[string]string, error) {
 	}
 
 	return row, nil
+}
+
+// SplitDataset divides a dataset into two parts based on a categorical attribute value
+func (d *Dataset) SplitDataset(attributeName, attributeValue string) (*Dataset, *Dataset, error) {
+	attrIndex, err := d.GetColIndex(attributeName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	matchingIndices := make([]int, 0)
+	nonMatchingIndices := make([]int, 0)
+
+	for i := 0; i < d.NumRows; i++ {
+		if !d.Columns[attrIndex].Missing[i] && d.Columns[attrIndex].Values[i] == attributeValue {
+			matchingIndices = append(matchingIndices, i)
+		} else {
+			nonMatchingIndices = append(nonMatchingIndices, i)
+		}
+	}
+
+	matchingDataset := createSubset(d, matchingIndices)
+	nonMatchingDataset := createSubset(d, nonMatchingIndices)
+
+	return matchingDataset, nonMatchingDataset, nil
+}
+
+// SplitDatasetNumeric divides a dataset into two parts based on a numeric attribute threshold
+func (d *Dataset) SplitNumericDataset(attributeName string, threshold float64) (*Dataset, *Dataset, error) {
+	attrIndex, err := d.GetColIndex(attributeName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if d.Columns[attrIndex].Type != NumericType {
+		return nil, nil, fmt.Errorf("column '%s' is not numeric", attributeName)
+	}
+
+	lowerIndices := make([]int, 0)
+	greaterIndices := make([]int, 0)
+
+	for i := 0; i < d.NumRows; i++ {
+		if d.Columns[attrIndex].Missing[i] {
+			// Handle missing values by adding to both datasets
+			lowerIndices = append(lowerIndices, i)
+			greaterIndices = append(greaterIndices, i)
+			continue
+		}
+
+		val, err := GetNumericValue(d.Columns[attrIndex].Values[i])
+		if err != nil {
+			continue
+		}
+
+		if val <= threshold {
+			lowerIndices = append(lowerIndices, i)
+		} else {
+			greaterIndices = append(greaterIndices, i)
+		}
+	}
+
+	lowerDataset := createSubset(d, lowerIndices)
+	greaterDataset := createSubset(d, greaterIndices)
+
+	return lowerDataset, greaterDataset, nil
 }
