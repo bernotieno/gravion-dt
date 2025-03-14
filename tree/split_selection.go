@@ -103,5 +103,5 @@ func (b *Builder) findBestSplit(data *internal.Dataset, usedAttributes []string)
 	}
 
 	return bestAttr, bestSplit, bestGainRatio, nil
-	return "", nil, 0, nil
+
 }
