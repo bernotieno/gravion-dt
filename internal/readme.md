@@ -17,7 +17,7 @@ To use this package, clone the repository and import it in your Go project.
 
 ```sh
 # Clone the repository
-git clone https://github.com/bernotieno/gravion-dt.git
+git clone https://github.com/bernotieno/dt.git
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ git clone https://github.com/bernotieno/gravion-dt.git
 ### Reading Data
 Use the `read.go` functions to load CSV data into structs.
 ```go
-import "gravion-dt/internal"
+import "dt/internal"
 data, err := internal.ReadCSV("dataset")
 if err != nil {
     log.Fatal(err)
