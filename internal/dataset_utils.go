@@ -1,7 +1,9 @@
 package internal
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -182,4 +184,38 @@ func (d *Dataset) SplitNumericDataset(attributeName string, threshold float64) (
 	greaterDataset := createSubset(d, greaterIndices)
 
 	return lowerDataset, greaterDataset, nil
+}
+
+// SavePredictions writes a list of predictions to a CSV file.
+//
+// Parameters:
+//
+//	predictions ([]string): A slice containing the predictions to be saved.
+//	filename (string): The name of the CSV file where predictions will be written.
+//
+// Returns:
+//
+//	(error): An error if any issue occurs during file creation or writing; otherwise, nil.
+
+func SavePredictions(predictions []string, filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	if err := writer.Write([]string{"prediction"}); err != nil {
+		return err
+	}
+
+	for _, prediction := range predictions {
+		if err := writer.Write([]string{prediction}); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
