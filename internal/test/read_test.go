@@ -13,14 +13,14 @@ func TestReadCSVFromFile(t *testing.T) {
 		t.Fatalf("failed to get current directory: %v", err)
 	}
 
-	err = os.Chdir("../")
+	err = os.Chdir("../../")
 	if err != nil {
 		t.Fatalf("failed to change directory: %v", err)
 	}
 
 	defer os.Chdir(originalDir)
 
-	filePath := "./datasets/dataset.csv"
+	filePath := "datasets/dataset.csv"
 
 	// Call ReadCSV function to read the file
 	dataset, err := internal.ReadCSV(filePath)
