@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gravion-dt/tree"
 	"log"
 	"os"
 	"path/filepath"
@@ -58,15 +59,11 @@ dt -c predict -i <path to prediction_data_file.csv> -m <model_file.dt> -o <predi
 		if *targetColumn == "" {
 			log.Fatalln("Error: Target column is required for training. Use -t <target_column_name>")
 		}
-		// filePath := "./datasets/dataset.csv"
-		// out, _ := internal.ReadCSV(filePath)
-		// fmt.Println(out)
-		// // Call the train function here
-		// err := Train(*inputFile, *targetColumn, *outputFile)
-		// if err != nil {
-		// 	log.Fatalf("Error during training: %v\n", err)
-		// }
-		fmt.Printf("Decision tree model successfully trained and saved to %s\n", *outputFile)
+		// Call the train function here
+		err := tree.Train(*inputFile, *targetColumn, *outputFile)
+		if err != nil {
+			log.Fatalf("Error during training: %v\n", err)
+		}
 
 	case "predict":
 		if *modelFile == "" {
@@ -77,12 +74,11 @@ dt -c predict -i <path to prediction_data_file.csv> -m <model_file.dt> -o <predi
 			log.Fatalf("Error: Model file %s not found\n", *modelFile)
 		}
 
-		// // Call the predict function here
-		// err := Predict(*inputFile, *modelFile, *outputFile)
-		// if err != nil {
-		// 	log.Fatalf("Error during prediction: %v\n", err)
-		// }
-		fmt.Printf("Predictions successfully generated and saved to %s\n", *outputFile)
+		// Call the predict function here
+		err := tree.Predict(*inputFile, *modelFile, *outputFile)
+		if err != nil {
+			log.Fatalf("Error during prediction: %v\n", err)
+		}
 
 	default:
 		log.Fatalf("Error: Invalid command %s. Use -c train or -c predict\n", *command)
