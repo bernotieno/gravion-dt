@@ -1,7 +1,7 @@
 package test
 
 import (
-	"gravion-dt/internal"
+	"dt/internal"
 	"os"
 	"testing"
 )
