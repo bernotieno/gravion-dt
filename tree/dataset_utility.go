@@ -1,6 +1,9 @@
 package tree
 
-import "gravion-dt/internal"
+import (
+	"fmt"
+	"gravion-dt/internal"
+)
 
 // getClassCounts calculates the frequency of each class in the target column of the dataset.
 // It returns a map where the keys are class labels and the values are the counts of each class.
@@ -83,3 +86,111 @@ func (b *Builder) getClassConfidence(data *internal.Dataset, class string) (floa
 
 	return float64(classCounts[class]) / float64(totalCount), nil
 }
+
+// ValidateFeatures checks if all required feature columns are present in the dataset
+func (dt *DecisionTree) ValidateFeatures(data *internal.Dataset) []string {
+	missingColumns := make([]string, 0)
+	for featureName := range dt.FeatureTypes {
+		if !data.HasColumn(featureName) {
+			missingColumns = append(missingColumns, featureName)
+		}
+	}
+	return missingColumns
+}
+
+// Predict makes predictions for all instances in the dataset
+func (dt *DecisionTree) Predict(data *internal.Dataset) ([]string, error) {
+	predictions := make([]string, data.NumRows)
+
+	for i := 0; i < data.NumRows; i++ {
+		row, err := data.GetRow(i)
+		if err != nil {
+			return nil, err
+		}
+
+		prediction, err := dt.PredictInstance(row)
+		if err != nil {
+			return nil, err
+		}
+
+		predictions[i] = prediction
+	}
+
+	return predictions, nil
+}
+
+// PredictInstance makes a prediction for a single instance
+func (dt *DecisionTree) PredictInstance(instance map[string]string) (string, error) {
+	return dt.traverseTree(dt.Root, instance)
+}
+
+// traverseTree recursively traverses the decision tree to make a prediction
+func (dt *DecisionTree) traverseTree(node *Node, instance map[string]string) (string, error) {
+	if node == nil {
+		return "", fmt.Errorf("encountered nil node during prediction")
+	}
+
+	// If this is a leaf node, return its prediction
+	if node.Type == LeafNode {
+		return node.Prediction, nil
+	}
+
+	// Get the attribute value from the instance
+	attrValue, exists := instance[node.AttributeName]
+	if !exists || attrValue == "" {
+		// Handle missing value - return majority class at this node
+		var maxCount int
+		var majorityClass string
+		for class, count := range node.ClassCounts {
+			if count > maxCount {
+				maxCount = count
+				majorityClass = class
+			}
+		}
+		return majorityClass, nil
+	}
+
+	if node.Type == CategoricalNode {
+		// For categorical attributes, find the matching branch
+		child, exists := node.Children[attrValue]
+		if !exists {
+			// If no branch matches, use the majority class at this node
+			var maxCount int
+			var majorityClass string
+			for class, count := range node.ClassCounts {
+				if count > maxCount {
+					maxCount = count
+					majorityClass = class
+				}
+			}
+			return majorityClass, nil
+		}
+
+		// Continue traversing with the child node
+		return dt.traverseTree(child, instance)
+	} else if node.Type == NumericNode {
+		// For numeric attributes, compare with the threshold
+		numValue, err := internal.GetNumericValue(attrValue)
+		if err != nil {
+			// If value can't be converted to number, use majority class
+			var maxCount int
+			var majorityClass string
+			for class, count := range node.ClassCounts {
+				if count > maxCount {
+					maxCount = count
+					majorityClass = class
+				}
+			}
+			return majorityClass, nil
+		}
+
+		if numValue <= node.Threshold {
+			return dt.traverseTree(node.LeftChild, instance)
+		} else {
+			return dt.traverseTree(node.RightChild, instance)
+		}
+	}
+
+	return "", fmt.Errorf("unknown node type during prediction")
+}
+
