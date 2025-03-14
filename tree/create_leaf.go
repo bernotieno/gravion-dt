@@ -1,6 +1,6 @@
 package tree
 
-import "gravion-dt/internal"
+import "dt/internal"
 
 // createLeafNode creates a leaf node for the decision tree using the provided dataset.
 // It calculates the majority class, class confidence, and class counts from the dataset
