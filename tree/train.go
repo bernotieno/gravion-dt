@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gravion-dt/internal"
+	"dt/internal"
 )
 
 // Train trains a decision tree model using the dataset provided in the input file.
