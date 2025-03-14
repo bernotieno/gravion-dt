@@ -84,5 +84,24 @@ func (b *Builder) findBestSplit(data *internal.Dataset, usedAttributes []string)
 		wg.Wait()
 		close(resultChan)
 	}()
+
+	// Find the attribute with the highest gain ratio
+	var bestAttr string
+	var bestSplit interface{}
+	var bestGainRatio float64 = -1
+
+	for result := range resultChan {
+		if result.err != nil {
+			return "", nil, 0, result.err
+		}
+
+		if result.gainRatio > bestGainRatio {
+			bestAttr = result.attrName
+			bestSplit = result.splitVal
+			bestGainRatio = result.gainRatio
+		}
+	}
+
+	return bestAttr, bestSplit, bestGainRatio, nil
 	return "", nil, 0, nil
 }
