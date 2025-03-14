@@ -2,6 +2,7 @@ package tree
 
 import (
 	"gravion-dt/internal"
+	"sync"
 )
 
 // findBestSplit finds the attribute with the highest gain ratio
@@ -46,5 +47,15 @@ func (b *Builder) findBestSplit(data *internal.Dataset, usedAttributes []string)
 	if len(availableAttrs) == 0 {
 		return "", nil, 0, nil
 	}
+	// Use goroutines to calculate gain ratio for each attribute in parallel
+	type attrResult struct {
+		attrName  string
+		splitVal  interface{}
+		gainRatio float64
+		err       error
+	}
+
+	resultChan := make(chan attrResult, len(availableAttrs))
+	var wg sync.WaitGroup
 	return "", nil, 0, nil
 }
