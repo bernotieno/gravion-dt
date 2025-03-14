@@ -20,6 +20,27 @@ func (b *Builder) BuildTree(data *internal.Dataset, usedAttributes []string, dep
 		return nil, err
 	}
 
+	// If information gain is too small, make a leaf
+	entropy, _ := b.CalculateEntropy(data)
+	if entropy < 0.05 { // Minimal entropy threshold
+		return b.CreateLeafNode(data)
+	}
+
+	// If dataset is almost pure (>95% one class), make a leaf
+	if len(classCounts) > 0 {
+		total := 0
+		maxCount := 0
+		for _, count := range classCounts {
+			total += count
+			if count > maxCount {
+				maxCount = count
+			}
+		}
+		if float64(maxCount)/float64(total) > 0.95 {
+			return b.CreateLeafNode(data)
+		}
+	}
+
 	// If all instances belong to the same class, create a leaf node
 	if len(classCounts) == 1 {
 		return b.CreateLeafNode(data)

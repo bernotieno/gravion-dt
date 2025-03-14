@@ -2,6 +2,7 @@ package tree
 
 import (
 	"dt/internal"
+	"runtime"
 )
 
 // NodeType represents the type of a decision tree node
@@ -57,11 +58,12 @@ type Builder struct {
 // Returns:
 //   - A pointer to a newly created Builder instance.
 func NewBuilder(data *internal.Dataset, targetColumn string) *Builder {
+	numOfWorkers := runtime.NumCPU() * 2
 	return &Builder{
 		data:                data,
 		targetColumn:        targetColumn,
-		minInstancesPerLeaf: 2,  // Default minimum instances per leaf
-		maxDepth:            20, // Default maximum depth
-		numWorkers:          4,  // Default number of worker goroutines
+		minInstancesPerLeaf: 10,           // Default minimum instances per leaf
+		maxDepth:            10,           // Default maximum depth
+		numWorkers:          numOfWorkers, // Default number of worker goroutines
 	}
 }
