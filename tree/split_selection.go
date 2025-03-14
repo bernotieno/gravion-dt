@@ -57,5 +57,32 @@ func (b *Builder) findBestSplit(data *internal.Dataset, usedAttributes []string)
 
 	resultChan := make(chan attrResult, len(availableAttrs))
 	var wg sync.WaitGroup
+
+	// Limit the number of concurrent goroutines
+	semaphore := make(chan struct{}, b.numWorkers)
+
+	for _, attrName := range availableAttrs {
+		wg.Add(1)
+		go func(attr string) {
+			defer wg.Done()
+			semaphore <- struct{}{}        // Acquire semaphore
+			defer func() { <-semaphore }() // Release semaphore
+
+			// Calculate gain ratio for this attribute
+			splitVal, gainRatio, err := b.calculateGainRatio(data, attr, classEntropy)
+			resultChan <- attrResult{
+				attrName:  attr,
+				splitVal:  splitVal,
+				gainRatio: gainRatio,
+				err:       err,
+			}
+		}(attrName)
+	}
+
+	// Wait for all calculations to complete
+	go func() {
+		wg.Wait()
+		close(resultChan)
+	}()
 	return "", nil, 0, nil
 }
