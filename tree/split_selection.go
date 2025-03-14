@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"gravion-dt/internal"
+	"dt/internal"
 	"sync"
 )
 

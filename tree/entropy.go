@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"gravion-dt/internal"
+	"dt/internal"
 	"math"
 )
 
@@ -9,11 +9,13 @@ import (
 // Entropy is a measure of the amount of uncertainty or impurity in the dataset.
 //
 // Parameters:
-//   data (*internal.Dataset): The dataset for which to calculate the entropy.
+//
+//	data (*internal.Dataset): The dataset for which to calculate the entropy.
 //
 // Returns:
-//   float64: The calculated entropy value.
-//   error: An error if there is an issue calculating the class counts or if the dataset is empty.
+//
+//	float64: The calculated entropy value.
+//	error: An error if there is an issue calculating the class counts or if the dataset is empty.
 func (b *Builder) CalculateEntropy(data *internal.Dataset) (float64, error) {
 	// Get class counts
 	classCounts, err := b.getClassCounts(data)

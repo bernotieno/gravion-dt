@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"gravion-dt/internal"
+	"dt/internal"
 )
 
 // NodeType represents the type of a decision tree node
@@ -15,26 +15,26 @@ const (
 
 // Node represents a node in the decision tree
 type Node struct {
-	Type           NodeType                      `json:"type"`
-	AttributeName  string                        `json:"attribute,omitempty"`
-	AttributeValue string                        `json:"value,omitempty"`
-	Threshold      float64                       `json:"threshold,omitempty"`
-	Prediction     string                        `json:"prediction,omitempty"`
-	Confidence     float64                       `json:"confidence,omitempty"`
-	Children       map[string]*Node              `json:"children,omitempty"`
-	LeftChild      *Node                         `json:"left,omitempty"`
-	RightChild     *Node                         `json:"right,omitempty"`
-	ClassCounts    map[string]int                `json:"class_counts,omitempty"`
-	Metadata       map[string]any        `json:"metadata,omitempty"`
+	Type           NodeType                       `json:"type"`
+	AttributeName  string                         `json:"attribute,omitempty"`
+	AttributeValue string                         `json:"value,omitempty"`
+	Threshold      float64                        `json:"threshold,omitempty"`
+	Prediction     string                         `json:"prediction,omitempty"`
+	Confidence     float64                        `json:"confidence,omitempty"`
+	Children       map[string]*Node               `json:"children,omitempty"`
+	LeftChild      *Node                          `json:"left,omitempty"`
+	RightChild     *Node                          `json:"right,omitempty"`
+	ClassCounts    map[string]int                 `json:"class_counts,omitempty"`
+	Metadata       map[string]any                 `json:"metadata,omitempty"`
 	FeatureTypes   map[string]internal.ColumnType `json:"feature_types,omitempty"`
 }
 
 // DecisionTree represents a trained decision tree model
 type DecisionTree struct {
-	Root          *Node                         `json:"root"`
-	TargetColumn  string                        `json:"target_column"`
+	Root          *Node                          `json:"root"`
+	TargetColumn  string                         `json:"target_column"`
 	FeatureTypes  map[string]internal.ColumnType `json:"feature_types"`
-	FeatureValues map[string][]string           `json:"feature_values,omitempty"`
+	FeatureValues map[string][]string            `json:"feature_values,omitempty"`
 }
 
 // Builder is responsible for building a decision tree

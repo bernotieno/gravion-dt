@@ -1,8 +1,8 @@
 package tree
 
 import (
+	"dt/internal"
 	"fmt"
-	"gravion-dt/internal"
 )
 
 // getClassCounts calculates the frequency of each class in the target column of the dataset.
@@ -193,4 +193,3 @@ func (dt *DecisionTree) traverseTree(node *Node, instance map[string]string) (st
 
 	return "", fmt.Errorf("unknown node type during prediction")
 }
-

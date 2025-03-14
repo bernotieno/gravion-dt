@@ -5,7 +5,7 @@ import (
 	"math"
 	"sort"
 
-	"gravion-dt/internal"
+	"dt/internal"
 )
 
 // calculateGainRatio calculates the gain ratio for a given attribute in the dataset.

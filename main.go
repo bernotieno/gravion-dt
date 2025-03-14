@@ -1,9 +1,9 @@
 package main
 
 import (
+	"dt/tree"
 	"flag"
 	"fmt"
-	"gravion-dt/tree"
 	"log"
 	"os"
 	"path/filepath"

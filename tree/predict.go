@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gravion-dt/internal"
+	"dt/internal"
 )
 
 // Predict uses a trained decision tree model to make predictions on new data.

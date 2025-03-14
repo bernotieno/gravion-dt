@@ -1,6 +1,6 @@
 package tree
 
-import "gravion-dt/internal"
+import "dt/internal"
 
 // buildTree recursively builds the decision tree
 func (b *Builder) BuildTree(data *internal.Dataset, usedAttributes []string, depth int) (*Node, error) {
@@ -37,7 +37,7 @@ func (b *Builder) BuildTree(data *internal.Dataset, usedAttributes []string, dep
 	}
 
 	// Create a new node
-	if data.ColumnTypes[bestAttr] == internal.CategoricalType{
+	if data.ColumnTypes[bestAttr] == internal.CategoricalType {
 		// Categorical split
 		node := &Node{
 			Type:          CategoricalNode,
@@ -100,7 +100,7 @@ func (b *Builder) BuildTree(data *internal.Dataset, usedAttributes []string, dep
 		}
 
 		// Split the dataset based on the threshold
-		lowerSubset, greaterSubset, err := internal.NewDataset().SplitNumericDataset(bestAttr, threshold)
+		lowerSubset, greaterSubset, err := data.SplitNumericDataset(bestAttr, threshold)
 		if err != nil {
 			return nil, err
 		}
