@@ -12,7 +12,7 @@ import "gravion-dt/internal"
 // Returns:
 //   - A pointer to a Node representing the leaf node.
 //   - An error if any of the calculations (majority class, class confidence, class counts) fail.
-func (b *Builder) createLeafNode(data *internal.Dataset) (*Node, error) {
+func (b *Builder) CreateLeafNode(data *internal.Dataset) (*Node, error) {
 	majorityClass, err := b.getMajorityClass(data)
 	if err != nil {
 		return nil, err

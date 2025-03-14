@@ -105,7 +105,7 @@ func (b *Builder) calculateCategoricalGainRatio(data *internal.Dataset, attrName
 
 		if subset.NumRows > 0 {
 			// Calculate entropy of this subset
-			subsetEntropy, err := b.calculateEntropy(subset)
+			subsetEntropy, err := b.CalculateEntropy(subset)
 			if err != nil {
 				return nil, 0, err
 			}
@@ -203,12 +203,12 @@ func (b *Builder) calculateNumericGainRatio(data *internal.Dataset, attrName str
 		}
 
 		// Calculate entropy of each subset
-		lowerEntropy, err := b.calculateEntropy(lowerSubset)
+		lowerEntropy, err := b.CalculateEntropy(lowerSubset)
 		if err != nil {
 			return nil, 0, err
 		}
 
-		greaterEntropy, err := b.calculateEntropy(greaterSubset)
+		greaterEntropy, err := b.CalculateEntropy(greaterSubset)
 		if err != nil {
 			return nil, 0, err
 		}
