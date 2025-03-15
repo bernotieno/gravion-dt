@@ -59,7 +59,7 @@ func Train(inputFile, targetColumn, outputFile string) error {
 	}
 
 	accuracy := float64(correct) / float64(len(predictions))
-	fmt.Printf("Model Accuracy: %.2f%%\n", accuracy*100)
+	fmt.Printf("Percentage Accuracy: %.2f%%\n", accuracy*100)
 
 	// Save the model to file
 	if err := decisionTree.SaveToFile(outputFile); err != nil {
