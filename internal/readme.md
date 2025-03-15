@@ -11,10 +11,6 @@ The package consists of the following files:
 3. **`dataset_utils.go`** - Contains utility functions to enhance data extraction.
 4. **`splitting.go`** - Splits the dataset into training and test sets.
 
-## Installation
-
-To use this package, clone the repository and import it in your Go project.
-
 ```sh
 # Clone the repository
 git clone https://github.com/bernotieno/dt.git
