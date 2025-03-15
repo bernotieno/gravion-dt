@@ -36,7 +36,7 @@ cd gravion-dt
 
 ### Testing the program
 ```sh
-go test ./...
+go test -v ./...
 ```
 
 ### Building the Project
