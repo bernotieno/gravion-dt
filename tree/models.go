@@ -58,7 +58,7 @@ type Builder struct {
 // Returns:
 //   - A pointer to a newly created Builder instance.
 func NewBuilder(data *internal.Dataset, targetColumn string) *Builder {
-	numOfWorkers := runtime.NumCPU() * 2
+	numOfWorkers := runtime.NumCPU()
 	return &Builder{
 		data:                data,
 		targetColumn:        targetColumn,
@@ -66,4 +66,11 @@ func NewBuilder(data *internal.Dataset, targetColumn string) *Builder {
 		maxDepth:            10,           // Default maximum depth
 		numWorkers:          numOfWorkers, // Default number of worker goroutines
 	}
+}
+
+// HyperparameterSet represents a set of hyperparameters to try
+type HyperparameterSet struct {
+	MinInstancesPerLeaf int
+	MaxDepth            int
+	Accuracy            float64 // Holds the validation accuracy
 }

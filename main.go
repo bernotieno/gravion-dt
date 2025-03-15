@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Define flags for command line arguments
-	command := flag.String("c", "", "Command to execute: 'train' or 'predict'")
+	command := flag.String("c", "", "Command to execute: 'train', 'predict', or 'tune'")
 	inputFile := flag.String("i", "", "Path to the input CSV file required for training or prediction")
 	targetColumn := flag.String("t", "", "Name of the target column (required for training)")
 	outputFile := flag.String("o", "", "Path to save the output (model for training, predictions for predict)")
@@ -63,6 +63,16 @@ dt -c predict -i <path to prediction_data_file.csv> -m <model_file.dt> -o <predi
 		err := tree.Train(*inputFile, *targetColumn, *outputFile)
 		if err != nil {
 			log.Fatalf("Error during training: %v\n", err)
+		}
+
+	case "tune":
+		if *targetColumn == "" {
+			log.Fatalln("Error: Target column is required for hyperparameter tuning. Use -t <target_column_name>")
+		}
+		// Call the hyperparameter tuning function
+		err := tree.Tune(*inputFile, *targetColumn, *outputFile)
+		if err != nil {
+			log.Fatalf("Error during hyperparameter tuning: %v\n", err)
 		}
 
 	case "predict":
