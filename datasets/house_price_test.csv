@@ -1,0 +1,13 @@
+price_area,price_percentile,top_25pc,bedrooms,bathrooms,stories,mainroad,guestroom,basement,hotwaterheating,airconditioning,parking,furnishingstatus
+1792.45283,0.976,Yes,4,2,3,yes,no,no,no,yes,2,furnished
+1367.1875,0.869,Yes,4,4,4,yes,no,no,no,yes,3,furnished
+1229.919679,0.805,Yes,3,2,2,yes,no,yes,no,no,2,semi-furnished
+1628.666667,0.938,Yes,4,2,2,yes,no,yes,no,yes,3,furnished
+1537.735849,0.919,Yes,4,1,2,yes,yes,yes,no,yes,2,furnished
+1446.666667,0.899,Yes,3,3,1,yes,no,yes,no,yes,2,semi-furnished
+1182.983683,0.748,No,4,3,4,yes,no,no,no,yes,2,semi-furnished
+1410.5,0.882,Yes,3,2,4,yes,yes,yes,no,yes,0,semi-furnished
+946.4788732,0.491,No,3,1,1,yes,no,no,no,no,1,semi-furnished
+1056.603774,0.627,No,5,2,2,yes,no,yes,yes,no,2,unfurnished
+1527.272727,0.91,Yes,4,2,2,yes,no,yes,no,yes,1,semi-furnished
+1123.745819,0.693,No,3,2,4,yes,no,no,no,yes,2,unfurnished
