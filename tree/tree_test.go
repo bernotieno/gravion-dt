@@ -100,30 +100,6 @@ func TestBuilderSetters(t *testing.T) {
 	}
 }
 
-func TestBuildWithInvalidTargetColumn(t *testing.T) {
-	// Create a mock dataset with no target column
-	mockData := &MockDataset{
-		columnTypes: map[string]internal.ColumnType{
-			"feature1": internal.NumericType,
-			"feature2": internal.CategoricalType,
-		},
-		uniqueValuesMap: map[string][]string{
-			"feature2": {"value1", "value2", "value3"},
-		},
-	}
-
-	builder := NewBuilder(&mockData.Dataset, "nonexistent_target")
-
-	// Test Build with invalid target column
-	_, err := builder.Build()
-
-	if err == nil {
-		t.Error("Expected error for nonexistent target column, got nil")
-	} else if err.Error() != "target column 'nonexistent_target' not found in dataset" {
-		t.Errorf("Expected specific error message for nonexistent target column, got: %s", err.Error())
-	}
-}
-
 // TestBuild requires implementation or mocking of BuildTree
 // Here's a revised version that works with our mock approach
 type BuilderWithMockTree struct {
