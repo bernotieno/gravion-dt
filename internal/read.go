@@ -71,13 +71,11 @@ func DetectColumnType(values []string) ColumnType {
 	return CategoricalType
 }
 
-
 const (
 	sampleSizeForEstimation = 100   // Number of rows to read for estimating row size
 	maxRowsThreshold        = 10000 // Threshold for sampling
 	sampleFraction          = 0.1   // Fraction of rows to sample if the file is large
 )
-
 
 // ReadCSV reads a CSV file from the specified filepath and returns a Dataset.
 // It first opens the file and retrieves its size. Then, it reads the header
@@ -88,11 +86,12 @@ const (
 //
 // Parameters:
 //   - filepath: The path to the CSV file.
+//   - isPredict: A boolean indicating whether the CSV file is for prediction.
 //
 // Returns:
 //   - *Dataset: A pointer to the Dataset containing the CSV data.
 //   - error: An error if any occurred during the reading or processing of the file.
-func ReadCSV(filepath string) (*Dataset, error) {
+func ReadCSV(filepath string, isPredict bool) (*Dataset, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %v", err)
@@ -105,12 +104,22 @@ func ReadCSV(filepath string) (*Dataset, error) {
 	}
 	fileSize := fileInfo.Size()
 
-	newReader := csv.NewReader(file)
+	if fileSize == 0 {
+		return nil, fmt.Errorf("the csv file provided is empty")
+	}
 
-	// Read the header
+	newReader := csv.NewReader(file)
+	// Initialize dataset
+
 	header, err := newReader.Read()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read header: %v", err)
+	}
+
+	dataset := initializeDataset(header)
+
+	if isPredict {
+		processAllRows(newReader, header, dataset)
 	}
 
 	avgRowSize, err := estimateAverageRowSize(filepath, sampleSizeForEstimation)
@@ -118,9 +127,6 @@ func ReadCSV(filepath string) (*Dataset, error) {
 		return nil, fmt.Errorf("failed to estimate row size: %v", err)
 	}
 	estimatedRows := int(float64(fileSize) / avgRowSize)
-
-	// Initialize dataset
-	dataset := initializeDataset(header)
 
 	// Determine if sampling is needed
 	sample := estimatedRows > maxRowsThreshold
