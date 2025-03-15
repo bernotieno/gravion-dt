@@ -28,7 +28,7 @@ go build -o dt .
 ### Training a Decision Tree
 To train a decision tree model from a dataset:
 ```sh
-dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
+./dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
 ```
 #### Arguments:
 - `-c train` : Specifies training mode.
@@ -38,13 +38,13 @@ dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
 
 #### Example:
 ```sh
-dt -c train -i datasets/train.csv -t class -o model.dt
+./dt -c train -i datasets/train.csv -t class -o model.dt
 ```
 
 ### Making Predictions
 To apply the trained decision tree model to new data:
 ```sh
-dt -c predict -i <prediction_data_file.csv> -m <model_file.dt> -o <predictions.csv>
+./dt -c predict -i <prediction_data_file.csv> -m <model_file.dt> -o <predictions.csv>
 ```
 #### Arguments:
 - `-c predict` : Specifies prediction mode.
@@ -54,11 +54,11 @@ dt -c predict -i <prediction_data_file.csv> -m <model_file.dt> -o <predictions.c
 
 #### Example:
 ```sh
-dt -c predict -i datasets/test.csv -m model.dt -o predictions.csv
+./dt -c predict -i datasets/test.csv -m model.dt -o predictions.csv
 ```
 
 ## Error Handling
-
+- Missing values are skipped
 
 
 ## Licensing
