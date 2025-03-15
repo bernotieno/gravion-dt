@@ -20,7 +20,7 @@ import (
 // Returns:
 //   - error: An error if the training process fails, otherwise nil.
 func Train(inputFile, targetColumn, outputFile string) error {
-	data, err := internal.ReadCSV(inputFile)
+	data, err := internal.ReadCSV(inputFile, false)
 	if err != nil {
 		return fmt.Errorf("failed to load dataset: %w", err)
 	}
