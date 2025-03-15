@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strconv"
 	"time"
@@ -70,26 +71,27 @@ func DetectColumnType(values []string) ColumnType {
 	return CategoricalType
 }
 
-// ReadCSV reads a CSV file from the given filepath and returns a Dataset.
-// It expects the first row of the CSV to be the header containing column names.
-// Each subsequent row is treated as a data record.
-//
-// The function performs the following steps:
-// 1. Opens the CSV file.
-// 2. Reads the header row to determine column names.
-// 3. Initializes a Dataset with columns based on the header.
-// 4. Reads each data row, appending values to the corresponding columns in the Dataset.
-// 5. Detects the type of each column and updates the Dataset accordingly.
-//
-// If the file cannot be opened or read, or if there is a mismatch in the number of fields
-// in any row compared to the header, an error is returned.
+
+const (
+	sampleSizeForEstimation = 100   // Number of rows to read for estimating row size
+	maxRowsThreshold        = 10000 // Threshold for sampling
+	sampleFraction          = 0.1   // Fraction of rows to sample if the file is large
+)
+
+
+// ReadCSV reads a CSV file from the specified filepath and returns a Dataset.
+// It first opens the file and retrieves its size. Then, it reads the header
+// and estimates the average row size to determine if sampling is needed based
+// on the estimated number of rows. If sampling is required, it processes a
+// fraction of the rows; otherwise, it processes all rows. After reading the
+// rows, it detects the column types and updates the dataset accordingly.
 //
 // Parameters:
-// - filepath: The path to the CSV file to be read.
+//   - filepath: The path to the CSV file.
 //
 // Returns:
-// - A pointer to the Dataset containing the CSV data.
-// - An error if any issues are encountered during file reading or processing.
+//   - *Dataset: A pointer to the Dataset containing the CSV data.
+//   - error: An error if any occurred during the reading or processing of the file.
 func ReadCSV(filepath string) (*Dataset, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -97,49 +99,45 @@ func ReadCSV(filepath string) (*Dataset, error) {
 	}
 	defer file.Close()
 
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get file info: %v", err)
+	}
+	fileSize := fileInfo.Size()
+
 	newReader := csv.NewReader(file)
 
-	// Get the header for each column
+	// Read the header
 	header, err := newReader.Read()
 	if err != nil {
-		return nil, fmt.Errorf("failed to header file: %v", err)
+		return nil, fmt.Errorf("failed to read header: %v", err)
 	}
 
-	dataset := NewDataset()
-	for _, columnName := range header {
-		dataset.Columns = append(dataset.Columns,
-			Column{
-				Name:     columnName,
-				Values:   make([]string, 0),
-				Missing:  make([]bool, 0),
-				Metadata: make(map[string]any),
-			})
-		dataset.ColumnMap[columnName] = len(dataset.Columns) - 1
+	avgRowSize, err := estimateAverageRowSize(filepath, sampleSizeForEstimation)
+	if err != nil {
+		return nil, fmt.Errorf("failed to estimate row size: %v", err)
 	}
+	estimatedRows := int(float64(fileSize) / avgRowSize)
 
-	// Read data in rows
-	rowCount := 0
-	for {
-		record, err := newReader.Read()
-		if err == io.EOF {
-			break
-		}
+	// Initialize dataset
+	dataset := initializeDataset(header)
 
+	// Determine if sampling is needed
+	sample := estimatedRows > maxRowsThreshold
+
+	var rowCount int
+	if sample {
+		// Sample rows
+		rowCount, err = processSampledRows(filepath, header, dataset, sampleFraction)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read file: %v", err)
+			return nil, fmt.Errorf("failed to process sampled rows: %v", err)
 		}
-
-		if len(record) != len(header) {
-			return nil, fmt.Errorf("row %d has %d fields, expected %d", rowCount+1, len(record), len(header))
+	} else {
+		// Read all rows
+		rowCount, err = processAllRows(newReader, header, dataset)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process all rows: %v", err)
 		}
-
-		for i, value := range record {
-			isMissing := value == ""
-			dataset.Columns[i].Values = append(dataset.Columns[i].Values, value)
-			dataset.Columns[i].Missing = append(dataset.Columns[i].Missing, isMissing)
-		}
-
-		rowCount++
 	}
 
 	dataset.NumRows = rowCount
@@ -152,4 +150,157 @@ func ReadCSV(filepath string) (*Dataset, error) {
 	}
 
 	return dataset, nil
+}
+
+// initializeDataset initializes the dataset with columns based on the header.
+func initializeDataset(header []string) *Dataset {
+	dataset := NewDataset()
+	for _, columnName := range header {
+		dataset.Columns = append(dataset.Columns,
+			Column{
+				Name:     columnName,
+				Values:   make([]string, 0),
+				Missing:  make([]bool, 0),
+				Metadata: make(map[string]any),
+			})
+		dataset.ColumnMap[columnName] = len(dataset.Columns) - 1
+	}
+	return dataset
+}
+
+// processSampledRows processes a sampled subset of rows from the CSV file.
+func processSampledRows(filepath string, header []string, dataset *Dataset, sampleFraction float64) (int, error) {
+	sampledRows, err := sampleRows(filepath, header, sampleFraction)
+	if err != nil {
+		return 0, fmt.Errorf("failed to sample rows: %v", err)
+	}
+
+	rowCount := 0
+	for _, record := range sampledRows {
+		if len(record) != len(header) {
+			return 0, fmt.Errorf("row has %d fields, expected %d", len(record), len(header))
+		}
+
+		for i, value := range record {
+			isMissing := value == ""
+			dataset.Columns[i].Values = append(dataset.Columns[i].Values, value)
+			dataset.Columns[i].Missing = append(dataset.Columns[i].Missing, isMissing)
+		}
+		rowCount++
+	}
+
+	return rowCount, nil
+}
+
+// processAllRows processes all rows from the CSV file.
+func processAllRows(reader *csv.Reader, header []string, dataset *Dataset) (int, error) {
+	rowCount := 0
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return 0, fmt.Errorf("failed to read file: %v", err)
+		}
+
+		if len(record) != len(header) {
+			return 0, fmt.Errorf("row %d has %d fields, expected %d", rowCount+1, len(record), len(header))
+		}
+
+		for i, value := range record {
+			isMissing := value == ""
+			dataset.Columns[i].Values = append(dataset.Columns[i].Values, value)
+			dataset.Columns[i].Missing = append(dataset.Columns[i].Missing, isMissing)
+		}
+		rowCount++
+	}
+
+	return rowCount, nil
+}
+
+// estimateAverageRowSize estimates the average row size by reading a sample of rows.
+func estimateAverageRowSize(filepath string, sampleSize int) (float64, error) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return 0, fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	newReader := csv.NewReader(file)
+
+	// Skip header
+	_, err = newReader.Read()
+	if err != nil {
+		return 0, fmt.Errorf("failed to read header: %v", err)
+	}
+
+	var totalSize int64
+	for i := 0; i < sampleSize; i++ {
+		record, err := newReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return 0, fmt.Errorf("failed to read row: %v", err)
+		}
+
+		// Calculate row size as the sum of the lengths of all fields
+		for _, field := range record {
+			totalSize += int64(len(field))
+		}
+	}
+
+	// Calculate average row size
+	if sampleSize == 0 {
+		return 0, fmt.Errorf("no rows sampled")
+	}
+	return float64(totalSize) / float64(sampleSize), nil
+}
+
+// sampleRows randomly samples rows from the CSV file.
+func sampleRows(filepath string, header []string, fraction float64) ([][]string, error) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	newReader := csv.NewReader(file)
+
+	// Skip header
+	_, err = newReader.Read()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read header: %v", err)
+	}
+
+	// Read all rows into memory (for simplicity, but not memory-efficient for very large files)
+	var allRows [][]string
+	for {
+		record, err := newReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to read row: %v", err)
+		}
+		allRows = append(allRows, record)
+	}
+
+	// Calculate the number of rows to sample
+	sampleSize := int(float64(len(allRows)) * fraction)
+	if sampleSize < 1 {
+		sampleSize = 1
+	}
+
+	// Create a local random number generator
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	// Shuffle the rows using the local generator
+	r.Shuffle(len(allRows), func(i, j int) {
+		allRows[i], allRows[j] = allRows[j], allRows[i]
+	})
+
+	sampledRows := allRows[:sampleSize]
+	return sampledRows, nil
 }
