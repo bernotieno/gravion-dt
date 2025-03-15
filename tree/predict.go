@@ -49,6 +49,7 @@ func Predict(inputFile, modelFile, outputFile string) error {
 		return fmt.Errorf("failed to save predictions: %w", err)
 	}
 
+	fmt.Printf("Prediction made successfully and saved to %s\n", outputFile)
 	return nil
 }
 
