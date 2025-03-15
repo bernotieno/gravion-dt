@@ -20,6 +20,7 @@ import (
 // Returns:
 //   - error: An error if the training process fails, otherwise nil.
 func Train(inputFile, targetColumn, outputFile string) error {
+	fmt.Println("Reading CSV file...")
 	data, err := internal.ReadCSV(inputFile, false)
 	if err != nil {
 		return fmt.Errorf("failed to load dataset: %w", err)
@@ -34,10 +35,13 @@ func Train(inputFile, targetColumn, outputFile string) error {
 	builder := NewBuilder(trainData, targetColumn)
 
 	// Build the decision tree
+	fmt.Println("Training and building decision tree model...")
 	decisionTree, err := builder.Build()
 	if err != nil {
 		return fmt.Errorf("failed to build decision tree: %w", err)
 	}
+
+	fmt.Println("\nEvaluating model...")
 
 	// Evaluate the model on the test set
 	predictions, err := decisionTree.Predict(testData)
