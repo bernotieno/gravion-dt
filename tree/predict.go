@@ -27,7 +27,7 @@ func Predict(inputFile, modelFile, outputFile string) error {
 	}
 
 	// Load the dataset for prediction
-	data, err := internal.ReadCSV(inputFile)
+	data, err := internal.ReadCSV(inputFile, true)
 	if err != nil {
 		return fmt.Errorf("failed to load dataset: %w", err)
 	}
