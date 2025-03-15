@@ -1,5 +1,17 @@
 # Fast & Scalable Decision Tree
 
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Building and Running](#building-and-running-the-project)
+- [Testing](#testing-the-program)
+- [C4.5 Algorithm](#implementation-of-c45-decision-tree-algorithm)
+- [Tuning](#hyperparameter-tuning-function)
+- [Authors](#authors)
+
+
 ## Overview
 This project implements a high-performance and scalable **C4.5 Decision Tree** classifier in Go. Designed for efficiency, it can handle large datasets with minimal memory overhead and supports parallelization for faster computations.
 
@@ -66,23 +78,33 @@ git clone https://github.com/bernotieno/gravion-dt.git
 cd gravion-dt
 ```
 
-### Testing the Program
+
+## Building and Running the Project
+The project uses a `Makefile` for building and making the program global.
+
+To compile the project, run this command:
+```sh
+make
+```
+This will generate a global executable named `dt`.
+- **Note:** This will require your authentication because the program is being sudo moved to the bin.
+
+Train your model using this command:
+```bash
+dt -c train -i <input_data_file.csv> -t <target_column> -o <output_tree.dt>
+```
+Predict your result using this command:
+```bash
+dt -c predict -i <prediction_data_file.csv> -m <model_file.dt> -o <predictions.csv>
+```
+
+
+## Testing the Program
 ```sh
 go test -v ./...
 ```
 
-- *Note*: Sample testing data can be found inside the datasets folder, using the instructions below.
-
-### Building the Project
-The project uses a `Makefile` for building and running the application efficiently.
-
-To compile the project:
-```sh
-make
-```
-This will generate an executable named `dt`.
-
----
+- **Note:** Sample testing data can be found inside the datasets folder.
 
 ## Implementation of C4.5 Decision Tree Algorithm
 
@@ -156,7 +178,7 @@ C4.5 handles missing values by:
 - Excluding instances with missing values when calculating entropy and gain ratio.
 - When building the tree, instances with missing values are distributed proportionally among branches.
 
----
+
 
 ## Hyperparameter Tuning Function
 This function performs hyperparameter tuning using the `tune` command. It searches for the optimal combination of parameters by evaluating different configurations. The function:
@@ -170,15 +192,16 @@ If you want to train your model with the best parameter, use:
 ./dt -c tune -i datasets/train.csv -t class -o models/model.dt
 ```
 
----
+
 
 ## Makefile Commands
 The `Makefile` includes the following automation commands:
 - **Build the project:** `make build`
 - **Run the CLI:** `make run`
 - **Clean compiled files:** `make clean`
+- **Make the program global:** `make install`
 
----
+
 
 ## Authors
 - [Bernard Okumu](https://github.com/bernotieno)
@@ -187,5 +210,5 @@ The `Makefile` includes the following automation commands:
 - [Joab Owala](https://github.com/joabowala)
 - [Hilary Okello](https://github.com/hilaryokello)
 
----
+
 
