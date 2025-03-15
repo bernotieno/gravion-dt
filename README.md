@@ -25,7 +25,6 @@ This project implements a high-performance and scalable **C4.5 Decision Tree** c
 │   ├── dataset.csv
 │   ├── house_price_top25pc.csv
 │   └── prediction.csv
-├── dt
 ├── go.mod
 ├── internal
 │   ├── dataset_utils.go
