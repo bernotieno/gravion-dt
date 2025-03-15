@@ -21,12 +21,14 @@ import (
 //   - error: An error message if any step fails; otherwise, nil.
 func Predict(inputFile, modelFile, outputFile string) error {
 	// Load the model from file
+	fmt.Printf("Loading model %s...\n", modelFile)
 	decisionTree, err := LoadFromFile(modelFile)
 	if err != nil {
 		return fmt.Errorf("failed to load model: %w", err)
 	}
 
 	// Load the dataset for prediction
+	fmt.Printf("Reading %s file...\n", inputFile)
 	data, err := internal.ReadCSV(inputFile, true)
 	if err != nil {
 		return fmt.Errorf("failed to load dataset: %w", err)
@@ -39,6 +41,7 @@ func Predict(inputFile, modelFile, outputFile string) error {
 	}
 
 	// Perform predictions using the loaded model
+	fmt.Printf("\nMaking predictions from %s...\n", modelFile)
 	predictions, err := decisionTree.Predict(data)
 	if err != nil {
 		return fmt.Errorf("prediction error: %w", err)
