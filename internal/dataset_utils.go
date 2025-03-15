@@ -219,3 +219,60 @@ func SavePredictions(predictions []string, filename string) error {
 
 	return nil
 }
+
+// Combine merges two datasets together and returns a new combined dataset.
+// The datasets must have the same column structure.
+//
+// Parameters:
+//   - other: Another dataset to combine with this one
+//
+// Returns:
+//   - *Dataset: A new dataset containing rows from both datasets
+func (d *Dataset) Combine(other *Dataset) *Dataset {
+	// Check if the datasets have the same column structure
+	if len(d.Columns) != len(other.Columns) {
+		panic("datasets must have the same column structure")
+	}
+
+	for i, col := range d.Columns {
+		if col.Name != other.Columns[i].Name || col.Type != other.Columns[i].Type {
+			panic("datasets must have the same column structure")
+		}
+	}
+
+	// Create a new dataset with the same columns
+	combined := NewDataset()
+
+	// Copy columns and metadata
+	for _, col := range d.Columns {
+		combined.Columns = append(combined.Columns, Column{
+			Name:     col.Name,
+			Type:     col.Type,
+			Values:   make([]string, 0, len(col.Values)+len(other.Columns[combined.ColumnMap[col.Name]].Values)),
+			Missing:  make([]bool, 0, len(col.Missing)+len(other.Columns[combined.ColumnMap[col.Name]].Missing)),
+			Metadata: col.Metadata,
+		})
+		combined.ColumnMap[col.Name] = len(combined.Columns) - 1
+		combined.ColumnTypes[col.Name] = col.Type
+	}
+
+	// Add rows from the first dataset
+	for i := 0; i < d.NumRows; i++ {
+		for j, col := range d.Columns {
+			combined.Columns[j].Values = append(combined.Columns[j].Values, col.Values[i])
+			combined.Columns[j].Missing = append(combined.Columns[j].Missing, col.Missing[i])
+		}
+		combined.NumRows++
+	}
+
+	// Add rows from the second dataset
+	for i := 0; i < other.NumRows; i++ {
+		for j, col := range other.Columns {
+			combined.Columns[j].Values = append(combined.Columns[j].Values, col.Values[i])
+			combined.Columns[j].Missing = append(combined.Columns[j].Missing, col.Missing[i])
+		}
+		combined.NumRows++
+	}
+
+	return combined
+}
