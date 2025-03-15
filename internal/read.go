@@ -192,7 +192,7 @@ func initializeDataset(header []string) *Dataset {
 
 // processSampledRows processes a sampled subset of rows from the CSV file.
 func processSampledRows(filepath string, header []string, dataset *Dataset, sampleFraction float64) (int, error) {
-	sampledRows, err := sampleRows(filepath, header, sampleFraction)
+	sampledRows, err := sampleRows(filepath, sampleFraction)
 	if err != nil {
 		return 0, fmt.Errorf("failed to sample rows: %v", err)
 	}
@@ -281,7 +281,7 @@ func estimateAverageRowSize(filepath string, sampleSize int) (float64, error) {
 }
 
 // sampleRows randomly samples rows from the CSV file.
-func sampleRows(filepath string, header []string, fraction float64) ([][]string, error) {
+func sampleRows(filepath string, fraction float64) ([][]string, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %v", err)
