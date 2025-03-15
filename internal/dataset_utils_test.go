@@ -1,17 +1,16 @@
-package test
+package internal
 
 import (
-	"dt/internal"
 	"reflect"
 	"testing"
 )
 
 func TestDataset_GetColIndex(t *testing.T) {
 	type fields struct {
-		Columns     []internal.Column
+		Columns     []Column
 		ColumnMap   map[string]int
 		NumRows     int
-		ColumnTypes map[string]internal.ColumnType
+		ColumnTypes map[string]ColumnType
 	}
 	type args struct {
 		name string
@@ -44,7 +43,7 @@ func TestDataset_GetColIndex(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &internal.Dataset{
+			d := &Dataset{
 				Columns:     tt.fields.Columns,
 				ColumnMap:   tt.fields.ColumnMap,
 				NumRows:     tt.fields.NumRows,
@@ -64,10 +63,10 @@ func TestDataset_GetColIndex(t *testing.T) {
 
 func TestDataset_GetColValues(t *testing.T) {
 	type fields struct {
-		Columns     []internal.Column
+		Columns     []Column
 		ColumnMap   map[string]int
 		NumRows     int
-		ColumnTypes map[string]internal.ColumnType
+		ColumnTypes map[string]ColumnType
 	}
 	type args struct {
 		name string
@@ -83,7 +82,7 @@ func TestDataset_GetColValues(t *testing.T) {
 		{
 			name: "Column exists",
 			fields: fields{
-				Columns: []internal.Column{
+				Columns: []Column{
 					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}},
 				},
 				ColumnMap: map[string]int{"age": 0},
@@ -106,7 +105,7 @@ func TestDataset_GetColValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &internal.Dataset{
+			d := &Dataset{
 				Columns:     tt.fields.Columns,
 				ColumnMap:   tt.fields.ColumnMap,
 				NumRows:     tt.fields.NumRows,
@@ -129,10 +128,10 @@ func TestDataset_GetColValues(t *testing.T) {
 
 func TestDataset_GetUniqueValues(t *testing.T) {
 	type fields struct {
-		Columns     []internal.Column
+		Columns     []Column
 		ColumnMap   map[string]int
 		NumRows     int
-		ColumnTypes map[string]internal.ColumnType
+		ColumnTypes map[string]ColumnType
 	}
 	type args struct {
 		columnName string
@@ -147,8 +146,8 @@ func TestDataset_GetUniqueValues(t *testing.T) {
 		{
 			name: "Categorical column with unique values",
 			fields: fields{
-				Columns: []internal.Column{
-					{Name: "gender", Values: []string{"Male", "Female", "Male"}, Missing: []bool{false, false, false}, Type: internal.CategoricalType},
+				Columns: []Column{
+					{Name: "gender", Values: []string{"Male", "Female", "Male"}, Missing: []bool{false, false, false}, Type: CategoricalType},
 				},
 				ColumnMap: map[string]int{"gender": 0},
 			},
@@ -159,8 +158,8 @@ func TestDataset_GetUniqueValues(t *testing.T) {
 		{
 			name: "Non-categorical column",
 			fields: fields{
-				Columns: []internal.Column{
-					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}, Type: internal.NumericType},
+				Columns: []Column{
+					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}, Type: NumericType},
 				},
 				ColumnMap: map[string]int{"age": 0},
 			},
@@ -171,7 +170,7 @@ func TestDataset_GetUniqueValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &internal.Dataset{
+			d := &Dataset{
 				Columns:     tt.fields.Columns,
 				ColumnMap:   tt.fields.ColumnMap,
 				NumRows:     tt.fields.NumRows,
@@ -220,7 +219,7 @@ func TestGetNumericValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := internal.GetNumericValue(tt.args.value)
+			got, err := GetNumericValue(tt.args.value)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetNumericValue() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -234,10 +233,10 @@ func TestGetNumericValue(t *testing.T) {
 
 func TestDataset_GetNumericValues(t *testing.T) {
 	type fields struct {
-		Columns     []internal.Column
+		Columns     []Column
 		ColumnMap   map[string]int
 		NumRows     int
-		ColumnTypes map[string]internal.ColumnType
+		ColumnTypes map[string]ColumnType
 	}
 	type args struct {
 		columnName string
@@ -253,8 +252,8 @@ func TestDataset_GetNumericValues(t *testing.T) {
 		{
 			name: "Numeric column with valid values",
 			fields: fields{
-				Columns: []internal.Column{
-					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}, Type: internal.NumericType},
+				Columns: []Column{
+					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}, Type: NumericType},
 				},
 				ColumnMap: map[string]int{"age": 0},
 			},
@@ -266,8 +265,8 @@ func TestDataset_GetNumericValues(t *testing.T) {
 		{
 			name: "Non-numeric column",
 			fields: fields{
-				Columns: []internal.Column{
-					{Name: "gender", Values: []string{"Male", "Female"}, Missing: []bool{false, false}, Type: internal.CategoricalType},
+				Columns: []Column{
+					{Name: "gender", Values: []string{"Male", "Female"}, Missing: []bool{false, false}, Type: CategoricalType},
 				},
 				ColumnMap: map[string]int{"gender": 0},
 			},
@@ -279,7 +278,7 @@ func TestDataset_GetNumericValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &internal.Dataset{
+			d := &Dataset{
 				Columns:     tt.fields.Columns,
 				ColumnMap:   tt.fields.ColumnMap,
 				NumRows:     tt.fields.NumRows,
@@ -302,10 +301,10 @@ func TestDataset_GetNumericValues(t *testing.T) {
 
 func TestDataset_GetRow(t *testing.T) {
 	type fields struct {
-		Columns     []internal.Column
+		Columns     []Column
 		ColumnMap   map[string]int
 		NumRows     int
-		ColumnTypes map[string]internal.ColumnType
+		ColumnTypes map[string]ColumnType
 	}
 	type args struct {
 		rowIndex int
@@ -320,7 +319,7 @@ func TestDataset_GetRow(t *testing.T) {
 		{
 			name: "Valid row index",
 			fields: fields{
-				Columns: []internal.Column{
+				Columns: []Column{
 					{Name: "age", Values: []string{"25", "30"}, Missing: []bool{false, false}},
 					{Name: "name", Values: []string{"John", "Jane"}, Missing: []bool{false, false}},
 				},
@@ -343,7 +342,7 @@ func TestDataset_GetRow(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &internal.Dataset{
+			d := &Dataset{
 				Columns:     tt.fields.Columns,
 				ColumnMap:   tt.fields.ColumnMap,
 				NumRows:     tt.fields.NumRows,
