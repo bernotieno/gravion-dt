@@ -119,7 +119,23 @@ func ReadCSV(filepath string, isPredict bool) (*Dataset, error) {
 	dataset := initializeDataset(header)
 
 	if isPredict {
-		processAllRows(newReader, header, dataset)
+		// For prediction mode, we need to read all rows
+		rowCount, err := processAllRows(newReader, header, dataset)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process rows in prediction mode: %v", err)
+		}
+
+		dataset.NumRows = rowCount
+
+		// Detect column types
+		for i, col := range dataset.Columns {
+			columnType := DetectColumnType(col.Values)
+			dataset.ColumnTypes[col.Name] = columnType
+			dataset.Columns[i].Type = columnType
+		}
+
+		// Return the populated dataset immediately for prediction
+		return dataset, nil
 	}
 
 	avgRowSize, err := estimateAverageRowSize(filepath, sampleSizeForEstimation)
