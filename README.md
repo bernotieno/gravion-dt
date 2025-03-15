@@ -1,15 +1,29 @@
 # Fast & Scalable Decision Tree
 
 ## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Building and Running](#building-and-running-the-project)
-- [Testing](#testing-the-program)
-- [C4.5 Algorithm](#implementation-of-c45-decision-tree-algorithm)
-- [Tuning](#hyperparameter-tuning-function)
-- [Authors](#authors)
+- [Fast \& Scalable Decision Tree](#fast--scalable-decision-tree)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Project Structure](#project-structure)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Clone the Repository](#clone-the-repository)
+  - [Makefile Commands](#makefile-commands)
+  - [Building and Running the Project](#building-and-running-the-project)
+      - [Move the dt file into the */bin* folder](#move-the-dt-file-into-the-bin-folder)
+  - [Testing the Program](#testing-the-program)
+  - [Implementation of C4.5 Decision Tree Algorithm](#implementation-of-c45-decision-tree-algorithm)
+    - [Entropy Calculation](#entropy-calculation)
+    - [Information Gain](#information-gain)
+    - [Split Information](#split-information)
+    - [Gain Ratio](#gain-ratio)
+    - [Numeric Attribute Handling](#numeric-attribute-handling)
+    - [Tree Building Process](#tree-building-process)
+    - [Stopping Criteria](#stopping-criteria)
+    - [Handling Missing Values](#handling-missing-values)
+  - [Hyperparameter Tuning Function](#hyperparameter-tuning-function)
+  - [Authors](#authors)
 
 
 ## Overview
@@ -78,15 +92,28 @@ git clone https://github.com/bernotieno/gravion-dt.git
 cd gravion-dt
 ```
 
+## Makefile Commands
+The `Makefile` includes the following automation commands:
+- **Build the project:** `make build`
+- **Run the CLI:** `make run`
+- **Clean compiled files:** `make clean`
+- **Make the program global:** `make install`
+
 
 ## Building and Running the Project
 The project uses a `Makefile` for building and making the program global.
 
 To compile the project, run this command:
 ```sh
-make
+make  # Builds the executable file dt
 ```
-This will generate a global executable named `dt`.
+This will generate an executable named `dt`.
+
+#### Move the dt file into the */bin* folder
+```sh
+make install
+```
+
 - **Note:** This will require your authentication because the program is being sudo moved to the bin.
 
 Train your model using this command:
@@ -189,18 +216,8 @@ This function performs hyperparameter tuning using the `tune` command. It search
 
 If you want to train your model with the best parameter, use:
 ```sh
-./dt -c tune -i datasets/train.csv -t class -o models/model.dt
+dt -c tune -i datasets/train.csv -t class -o models/model.dt
 ```
-
-
-
-## Makefile Commands
-The `Makefile` includes the following automation commands:
-- **Build the project:** `make build`
-- **Run the CLI:** `make run`
-- **Clean compiled files:** `make clean`
-- **Make the program global:** `make install`
-
 
 
 ## Authors

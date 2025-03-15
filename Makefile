@@ -12,4 +12,4 @@ run: build
 	./dt
 
 install: build
-	sudo mv dt /usr/local/bin/
+	sudo mv dt /bin
