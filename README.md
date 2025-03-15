@@ -34,6 +34,11 @@ git clone https://github.com/bernotieno/gravion-dt.git
 cd gravion-dt
 ```
 
+### Testing the program
+```sh
+go test ./...
+```
+
 ### Building the Project
 The project uses a `Makefile` for building and running the application efficiently.
 
